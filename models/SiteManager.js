@@ -8,27 +8,27 @@ var SiteManagerSchema = new Schema({
   },
   name: {
     type: String,
-    //required: true,
+    required: true,
   },
   gender: {
     type: String,
-    // required: true,
+    required: true,
   },
   siteId: {
     type: Number,
-    // required: true,
+    required: true,
   },
   workingHours: {
     type: String,
-    // required: true,
+    required: true,
   },
   nightShift: {
     type: Boolean,
-    // required: true,
+    required: true,
   },
   rank: {
     type: String,
-    // required: true,
+    required: true,
   },
   updated: {
     type: Date,
