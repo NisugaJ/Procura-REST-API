@@ -10,6 +10,7 @@ var indexRouter = require("./routes/index");
 var RequisitionRouter = require("./routes/RequisitionRouter");
 var SiteManagerRouter = require("./routes/SiteManagerRouter");
 var ItemRouter = require("./routes/ItemRouter");
+var SettingsRouter = require("./routes/SettingsRouter");
 
 var mongoose = require("mongoose");
 
@@ -36,6 +37,8 @@ app.use("/", indexRouter);
 app.use("/siteManager", SiteManagerRouter);
 app.use("/requisition", RequisitionRouter);
 app.use("/item", ItemRouter);
+app.use("/settings", SettingsRouter);
+
 var cors = require("cors");
 app.use(cors({ origin: true, credentials: true }));
 const PORT = 8000;

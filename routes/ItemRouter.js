@@ -1,4 +1,5 @@
 var express = require("express");
+const { response } = require("../app");
 var router = express.Router();
 var Item = require("../models/Item");
 const dbCon = require("../utils/db_Connection");
@@ -24,12 +25,106 @@ router.get("/", function (req, res, next) {
   });
 });
 
-/* GET SINGLE Item BY ID */
-router.get("/:id", function (req, res, next) {
-  Item.findById(req.params.id, function (err, item) {
-    if (err) return next(err);
-    res.json(requisition);
+/* GET all critical Items */
+router.get("/critical", function (req, res, next) {
+  //
+  var MongoClient = require("mongodb").MongoClient;
+  var url = dbCon.mongoURIConnString;
+
+  var limitPrice = 0;
+  var criticalPercentage = 0;
+
+  MongoClient.connect(url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("ProcurementDB");
+    dbo
+      .collection("Settings")
+      .find({})
+      .toArray(function (err, result) {
+        if (err) throw err;
+        limitPrice = result[0].limitPrice;
+        criticalPercentage = result[0].criticalPercentage;
+
+        dbo
+          .collection("Items")
+          .find({})
+          .toArray(function (err, result) {
+            if (err) throw err;
+            console.log(result);
+
+            var tempCriticalArray = [];
+            result.forEach(function (element) {
+              if (
+                (element.availableQty / element.maxQty) * 100 <=
+                criticalPercentage
+              ) {
+                //add to critical array
+                tempCriticalArray.push(element);
+              }
+            });
+
+            res.send(tempCriticalArray);
+            db.close();
+          });
+      });
   });
+});
+
+/* GET all normal Items */
+router.get("/normal", function (req, res, next) {
+  //
+  var MongoClient = require("mongodb").MongoClient;
+  var url = dbCon.mongoURIConnString;
+
+  var limitPrice = 0;
+  var criticalPercentage = 0;
+
+  MongoClient.connect(url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("ProcurementDB");
+    dbo
+      .collection("Settings")
+      .find({})
+      .toArray(function (err, result) {
+        if (err) throw err;
+        limitPrice = result[0].limitPrice;
+        criticalPercentage = result[0].criticalPercentage;
+
+        dbo
+          .collection("Items")
+          .find({})
+          .toArray(function (err, result) {
+            if (err) throw err;
+            console.log(result);
+
+            var tempNormalArray = [];
+            result.forEach(function (element) {
+              if (
+                (element.availableQty / element.maxQty) * 100 >
+                criticalPercentage
+              ) {
+                //add to critical array
+                tempNormalArray.push(element);
+              }
+            });
+
+            res.send(tempNormalArray);
+            db.close();
+          });
+      });
+  });
+});
+
+/* GET SINGLE Item BY ID */
+router.get("/itemByOId/:id", function (req, res, next) {
+  console.log("-----");
+  console.log(req.params);
+
+  // Item.findById(req.params.id, function (err, item) {
+  //   if (err) return next(err);
+  //   res.json(requisition);
+  // });
+  res.send(req.body);
 });
 
 /* POST - Register a Item */
