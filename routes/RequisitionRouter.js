@@ -7,10 +7,26 @@ router = express.Router();
 
 /* GET ALL Requisitions */
 router.get('/all', function(req, res, next) {
-  Requisition.find(function (err, requisitions) {
-        if (err) return next(err);
-        res.json(requisitions);
-    });
+
+var MongoClient = require("mongodb").MongoClient;
+var url = dbCon.mongoURIConnString;
+
+  MongoClient.connect(url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("ProcurementDB");
+    dbo
+      .collection("Requisitions")
+      .find({})
+      .toArray(function (err, result) {
+        if (err) throw err;
+        // console.log(result);
+        res.send(result);
+        db.close();
+      });
+  });
+
+
+
 });
   
 /* GET SINGLE Requisition BY ID */
@@ -48,23 +64,24 @@ router.post('/register', function(req, res, next) {
         approvedBy:""
         };
 
-    dbo.collection("Requisitions").insertOne(requisitionObj, function(err, res) {
+    dbo.collection("Requisitions").insertOne(requisitionObj, function(err, res1) {
         if (err) throw err;
         console.log("1 document inserted");
-        res.send(true);
         db.close();
     });
     }); 
 
-   
+    res.send("true");
 });
   
 /* UPDATE Requisition */
 router.put('/:id', function(req, res, next) {
-  Requisition.findByIdAndUpdate(req.params.id, req.body, function (err, requisition) {
-        if (err) return next(err);
-        res.json(requisition);
-    });
+    console.log(req.params.id);
+//   Requisition.findByIdAndUpdate(req.params.id, req.body, function (err, requisition) {
+//         if (err) return next(err);
+//         res.json(requisition);
+//     });
+res.send(req.body);
 });
   
 /* DELETE Requisition */
