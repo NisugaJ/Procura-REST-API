@@ -1,31 +1,31 @@
-var mongoose = require('mongoose');
+var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
-var REQUISITION_STATUS = require('../params').REQUISITION_STATUS
+var REQUISITION_STATUS = require("../params").REQUISITION_STATUS;
 
 var Requisition = new Schema({
-  name: {
+  userName: {
     type: String,
-    required: true
+    required: true,
   },
-  itemId:{
+  itemId: {
     type: String,
-    required: true
+    required: true,
   },
   supplierId: {
     type: String,
-    required: true
+    required: true,
   },
   quantity: {
     type: Number,
-    required: true
+    required: true,
   },
   requiredDate: {
     type: Date,
-    required: true
+    required: true,
   },
   siteId: {
-    type:String,
-    required: true
+    type: String,
+    required: true,
   },
   comment: {
     type: String,
@@ -34,8 +34,8 @@ var Requisition = new Schema({
     type: String,
     required: true,
     default: REQUISITION_STATUS.APPROVAL_PENDING,
-    enum: Object.values(REQUISITION_STATUS)
-  }
+    enum: Object.values(REQUISITION_STATUS),
+  },
 });
 
-module.exports = mongoose.model('Requisitions', Requisition);
+module.exports = mongoose.model("Requisitions", Requisition);
