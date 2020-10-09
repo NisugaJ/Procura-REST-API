@@ -2,27 +2,31 @@ var express = require("express");
 const { response } = require("../app");
 var router = express.Router();
 var Item = require("../models/Item");
+var ObjectId = require('mongodb').ObjectID;
 const dbCon = require("../utils/db_Connection");
+
 
 /* GET ALL Items */
 router.get("/", function (req, res, next) {
-  //
+
   var MongoClient = require("mongodb").MongoClient;
   var url = dbCon.mongoURIConnString;
 
-  MongoClient.connect(url, function (err, db) {
-    if (err) throw err;
-    var dbo = db.db("ProcurementDB");
-    dbo
-      .collection("Items")
-      .find({})
-      .toArray(function (err, result) {
-        if (err) throw err;
-        // console.log(result);
-        res.send(result);
-        db.close();
-      });
-  });
+    MongoClient.connect(url, function (err, db) {
+      if (err) throw err;
+      var dbo = db.db("ProcurementDB");
+      dbo
+        .collection("Items")
+        .find({})
+        .toArray(function (err, result) {
+          if (err) throw err;
+          // console.log(result);
+          res.send(result);
+          db.close();
+        });
+    });
+
+
 });
 
 /* GET all critical Items */
@@ -115,17 +119,37 @@ router.get("/normal", function (req, res, next) {
   });
 });
 
+
 /* GET SINGLE Item BY ID */
 router.get("/:id", function (req, res, next) {
   console.log("-----");
-  console.log(req.params);
+  console.log(req.params.id);
 
-  // Item.findById(req.params.id, function (err, item) {
-  //   if (err) return next(err);
-  //   res.json(requisition);
-  // });
-  res.send(req.body);
+  var stringArr = req.url.split('id=');
+   var itemObjId  = stringArr[1]; 
+
+   var MongoClient = require("mongodb").MongoClient;
+   var url = dbCon.mongoURIConnString;
+
+  MongoClient.connect(url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("ProcurementDB");
+    dbo
+      .collection("Items")
+      .find(ObjectId(itemObjId))
+      .toArray(function (err, result) {
+        if (err) throw err;
+        // console.log(result);
+        res.send(result);
+        db.close();
+      });
+  });
+
+
 });
+
+
+
 
 /* POST - Register a Item */
 router.post("/register", function (req, res, next) {

@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var Supplier = require('../models/Supplier');
+var ObjectId = require('mongodb').ObjectID;
+const dbCon = require("../utils/db_Connection");
+
 
 /* GET ALL Supplier */
 router.get('/all', function(req, res, next) {
@@ -12,10 +15,28 @@ router.get('/all', function(req, res, next) {
   
 /* GET SINGLE Supplier BY ID */
 router.get('/:id', function(req, res, next) {
-    Supplier.findById(req.params.id, function (err, supplier) {
-        if (err) return next(err);
-        res.json(supplier);
-    });
+
+    console.log(req.params.id);
+    var stringArr = req.url.split('id=');
+   var supplierObjId  = stringArr[1]; 
+
+   var MongoClient = require("mongodb").MongoClient;
+   var url = dbCon.mongoURIConnString;
+
+   MongoClient.connect(url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("ProcurementDB");
+    dbo
+      .collection("Supplier")
+      .find(ObjectId(supplierObjId))
+      .toArray(function (err, result) {
+        if (err) throw err;
+        // console.log(result);
+        res.send(result);
+        db.close();
+      });
+  });
+
 });
   
 /* POST - Register a Supplier */
