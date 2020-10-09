@@ -1,9 +1,9 @@
 var express = require('express');
-var 
-
-
-router = express.Router();
+var router = express.Router();
+const dbCon = require("../utils/db_Connection");
 var Requisition = require('../models/Requisition');
+const params = require('../params');
+router = express.Router();
 
 /* GET ALL Requisitions */
 router.get('/all', function(req, res, next) {
@@ -23,10 +23,40 @@ router.get('/:id', function(req, res, next) {
   
 /* POST - Register a Requisition */
 router.post('/register', function(req, res, next) {
-  Requisition.create(req.body, function (err, requisition) {
-        if (err) return next(err);
-        res.json(requisition);
+
+    var MongoClient = require("mongodb").MongoClient;
+    var url = dbCon.mongoURIConnString;
+
+    MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("ProcurementDB");
+    
+
+    var requisitionObj = {
+        siteManagerUsername: req.body.loggedInUser,
+        itemId : req.body.itemObjId,
+        supplierId:req.body.supplierId,
+        quantity:req.body.orderCount,
+        requiredDate: req.body.selectedNeedDate,
+        siteId: req.body.selectedSite,
+        totalPrice: req.body.total,
+        comment:req.body.comment,
+        priority:req.body.priority,
+        status :req.body.status,
+        requisitionDate:Date.now,
+        approvedDate:"",
+        approvedBy:""
+        };
+
+    dbo.collection("Requisitions").insertOne(requisitionObj, function(err, res) {
+        if (err) throw err;
+        console.log("1 document inserted");
+        res.send(true);
+        db.close();
     });
+    }); 
+
+   
 });
   
 /* UPDATE Requisition */
