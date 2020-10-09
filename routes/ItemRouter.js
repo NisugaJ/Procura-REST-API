@@ -116,7 +116,7 @@ router.get("/normal", function (req, res, next) {
 });
 
 /* GET SINGLE Item BY ID */
-router.get("/itemByOId/:id", function (req, res, next) {
+router.get("/:id", function (req, res, next) {
   console.log("-----");
   console.log(req.params);
 
