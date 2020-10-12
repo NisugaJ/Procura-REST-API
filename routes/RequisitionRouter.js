@@ -3,16 +3,97 @@ var router = express.Router();
 const dbCon = require("../utils/db_Connection");
 var Requisition = require('../models/Requisition');
 const params = require('../params');
+var ObjectId = require('mongodb').ObjectID;
 router = express.Router();
 
 /* GET ALL Requisitions */
 router.get('/all', function(req, res, next) {
-  Requisition.find(function (err, requisitions) {
-        if (err) return next(err);
-        res.json(requisitions);
-    });
+
+var MongoClient = require("mongodb").MongoClient;
+var url = dbCon.mongoURIConnString;
+
+  MongoClient.connect(url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("ProcurementDB");
+    dbo
+      .collection("Requisitions")
+      .find({})
+      .toArray(function (err, result) {
+        if (err) throw err;
+        // console.log(result);
+        res.send(result);
+        db.close();
+      });
+  });
+
+
+
 });
-  
+
+/* GET Requisitions BY Type */
+router.get('/:type', function(req, res, next) {
+    console.log("----");
+    console.log(req.params.type);
+    var stringArr = req.url.split('type=');
+    var type  = stringArr[1]; 
+ 
+    // APPROVAL_PENDING , APPROVED , REJECTED , IN_PROCESS , ORDER_PLACED , DELIVERED , PARTIALLY_DELIVERED 
+    if(type == 'APPROVAL_PENDING' || type == 'APPROVED'||type == 'REJECTED' || type == 'IN_PROCESS' ){
+
+        var MongoClient = require("mongodb").MongoClient;
+        var url = dbCon.mongoURIConnString;
+
+
+
+        MongoClient.connect(url, function (err, db) {
+            if (err) throw err;
+            var dbo = db.db("ProcurementDB");
+            dbo
+              .collection("Requisitions")
+              .find({  status:  type})
+              .toArray(function (err, result) {
+                if (err) throw err;
+                // console.log(result);
+                res.send(result);
+                db.close();
+              });
+          });
+
+    }
+
+  });
+    
+// Get Requisition by requisionI
+//Only handle APPROVAL_PENDING,  IN_PROCESS , APPROVED, REJECTED
+router.get('/getById/:reqId', function(req, res, next) {
+    console.log("----");
+    console.log(req.params.type);
+    var stringArr = req.url.split('reqId=');
+    var reqId  = stringArr[1]; 
+
+
+        var MongoClient = require("mongodb").MongoClient;
+        var url = dbCon.mongoURIConnString;
+
+               
+
+        MongoClient.connect(url, function (err, db) {
+            if (err) throw err;
+            var dbo = db.db("ProcurementDB");
+            dbo
+              .collection("Requisitions")
+              .find( ObjectId(reqId))
+              .toArray(function (err, result) {
+                if (err) throw err;
+                // console.log(result);
+                res.send(result);
+                db.close();
+              });
+          });
+
+  });
+
+
 /* GET SINGLE Requisition BY ID */
 router.get('/:id', function(req, res, next) {
   Requisition.findById(req.params.id, function (err, requisition) {
@@ -48,23 +129,24 @@ router.post('/register', function(req, res, next) {
         approvedBy:""
         };
 
-    dbo.collection("Requisitions").insertOne(requisitionObj, function(err, res) {
+    dbo.collection("Requisitions").insertOne(requisitionObj, function(err, res1) {
         if (err) throw err;
         console.log("1 document inserted");
-        res.send(true);
         db.close();
     });
     }); 
 
-   
+    res.send("true");
 });
   
 /* UPDATE Requisition */
 router.put('/:id', function(req, res, next) {
-  Requisition.findByIdAndUpdate(req.params.id, req.body, function (err, requisition) {
-        if (err) return next(err);
-        res.json(requisition);
-    });
+    console.log(req.params.id);
+//   Requisition.findByIdAndUpdate(req.params.id, req.body, function (err, requisition) {
+//         if (err) return next(err);
+//         res.json(requisition);
+//     });
+res.send(req.body);
 });
   
 /* DELETE Requisition */
