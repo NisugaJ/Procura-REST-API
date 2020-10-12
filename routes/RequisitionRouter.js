@@ -3,6 +3,7 @@ var router = express.Router();
 const dbCon = require("../utils/db_Connection");
 var Requisition = require('../models/Requisition');
 const params = require('../params');
+var ObjectId = require('mongodb').ObjectID;
 router = express.Router();
 
 /* GET ALL Requisitions */
@@ -42,6 +43,8 @@ router.get('/:type', function(req, res, next) {
         var MongoClient = require("mongodb").MongoClient;
         var url = dbCon.mongoURIConnString;
 
+
+
         MongoClient.connect(url, function (err, db) {
             if (err) throw err;
             var dbo = db.db("ProcurementDB");
@@ -58,16 +61,38 @@ router.get('/:type', function(req, res, next) {
 
     }
 
-    
-
-    // Requisition.findById(req.params.id, function (err, requisition) {
-    //       if (err) return next(err);
-    //       res.json(requisition);
-    //   });
-
-
   });
     
+// Get Requisition by requisionI
+//Only handle APPROVAL_PENDING,  IN_PROCESS , APPROVED, REJECTED
+router.get('/getById/:reqId', function(req, res, next) {
+    console.log("----");
+    console.log(req.params.type);
+    var stringArr = req.url.split('reqId=');
+    var reqId  = stringArr[1]; 
+
+
+        var MongoClient = require("mongodb").MongoClient;
+        var url = dbCon.mongoURIConnString;
+
+               
+
+        MongoClient.connect(url, function (err, db) {
+            if (err) throw err;
+            var dbo = db.db("ProcurementDB");
+            dbo
+              .collection("Requisitions")
+              .find( ObjectId(reqId))
+              .toArray(function (err, result) {
+                if (err) throw err;
+                // console.log(result);
+                res.send(result);
+                db.close();
+              });
+          });
+
+  });
+
 
 /* GET SINGLE Requisition BY ID */
 router.get('/:id', function(req, res, next) {
