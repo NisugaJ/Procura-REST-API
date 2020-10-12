@@ -28,7 +28,47 @@ var url = dbCon.mongoURIConnString;
 
 
 });
-  
+
+/* GET Requisitions BY Type */
+router.get('/:type', function(req, res, next) {
+    console.log("----");
+    console.log(req.params.type);
+    var stringArr = req.url.split('type=');
+    var type  = stringArr[1]; 
+ 
+    // APPROVAL_PENDING , APPROVED , REJECTED , IN_PROCESS , ORDER_PLACED , DELIVERED , PARTIALLY_DELIVERED 
+    if(type == 'APPROVAL_PENDING' || type == 'APPROVED'||type == 'REJECTED' || type == 'IN_PROCESS' ){
+
+        var MongoClient = require("mongodb").MongoClient;
+        var url = dbCon.mongoURIConnString;
+
+        MongoClient.connect(url, function (err, db) {
+            if (err) throw err;
+            var dbo = db.db("ProcurementDB");
+            dbo
+              .collection("Requisitions")
+              .find({  status:  type})
+              .toArray(function (err, result) {
+                if (err) throw err;
+                // console.log(result);
+                res.send(result);
+                db.close();
+              });
+          });
+
+    }
+
+    
+
+    // Requisition.findById(req.params.id, function (err, requisition) {
+    //       if (err) return next(err);
+    //       res.json(requisition);
+    //   });
+
+
+  });
+    
+
 /* GET SINGLE Requisition BY ID */
 router.get('/:id', function(req, res, next) {
   Requisition.findById(req.params.id, function (err, requisition) {
