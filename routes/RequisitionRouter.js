@@ -63,7 +63,7 @@ router.get('/:type', function(req, res, next) {
 
   });
     
-// Get Requisition by requisionI
+// Get Requisition by requisionId
 //Only handle APPROVAL_PENDING,  IN_PROCESS , APPROVED, REJECTED
 router.get('/getById/:reqId', function(req, res, next) {
     console.log("----");
@@ -71,11 +71,8 @@ router.get('/getById/:reqId', function(req, res, next) {
     var stringArr = req.url.split('reqId=');
     var reqId  = stringArr[1]; 
 
-
         var MongoClient = require("mongodb").MongoClient;
         var url = dbCon.mongoURIConnString;
-
-               
 
         MongoClient.connect(url, function (err, db) {
             if (err) throw err;
@@ -90,8 +87,9 @@ router.get('/getById/:reqId', function(req, res, next) {
                 db.close();
               });
           });
-
   });
+
+
 
 
 /* GET SINGLE Requisition BY ID */
@@ -112,6 +110,16 @@ router.post('/register', function(req, res, next) {
     if (err) throw err;
     var dbo = db.db("ProcurementDB");
     
+    // current timestamp in milliseconds
+let ts = Date.now();
+
+let date_ob = new Date(ts);
+let date = date_ob.getDate();
+let month = date_ob.getMonth() + 1;
+let year = date_ob.getFullYear();
+
+// prints date & time in YYYY-MM-DD format
+var today = date+"/"+month+"/"+year;
 
     var requisitionObj = {
         siteManagerUsername: req.body.loggedInUser,
@@ -124,7 +132,8 @@ router.post('/register', function(req, res, next) {
         comment:req.body.comment,
         priority:req.body.priority,
         status :req.body.status,
-        requisitionDate:Date.now,
+        // requisitionDate:Date.now,
+        requisitionDate:today,
         approvedDate:"",
         approvedBy:""
         };
@@ -141,7 +150,7 @@ router.post('/register', function(req, res, next) {
   
 /* UPDATE Requisition */
 router.put('/:id', function(req, res, next) {
-    console.log(req.params.id);
+   
 //   Requisition.findByIdAndUpdate(req.params.id, req.body, function (err, requisition) {
 //         if (err) return next(err);
 //         res.json(requisition);
@@ -151,10 +160,26 @@ res.send(req.body);
   
 /* DELETE Requisition */
 router.delete('/:id', function(req, res, next) {
-  Requisition.findByIdAndRemove(req.params.id, req.body, function (err, requisition) {
-        if (err) return next(err);
-        res.json(requisition);
-    });
+    console.log(req.params.id);
+
+    var stringArr = req.url.split('id=');
+    var reqId  = stringArr[1]; 
+
+    var MongoClient = require("mongodb").MongoClient;
+    var url = dbCon.mongoURIConnString;
+
+      MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("ProcurementDB");
+        var myquery = { _id: reqId };
+        dbo.collection("Requisitions").deleteOne( {"_id": ObjectId(reqId)}, function(err, obj) {
+          if (err) throw err;
+          console.log("1 document deleted");
+          res.send("true");
+          db.close();
+        });
+      }); 
+
 });
 
 router.get('/daily/:status',  function(req, res, next) {

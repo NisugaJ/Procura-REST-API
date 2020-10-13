@@ -5,7 +5,7 @@ var ObjectId = require('mongodb').ObjectID;
 const dbCon = require("../utils/db_Connection");
 
 
-/* GET ALL Supplier */
+/* GET ALL location */
 router.get('/all', function(req, res, next) {
   
     var MongoClient = require("mongodb").MongoClient;
@@ -28,7 +28,7 @@ router.get('/all', function(req, res, next) {
 
 });
   
-/* GET SINGLE Supplier BY ID */
+/* GET SINGLE location BY ID */
 router.get('/:id', function(req, res, next) {
 
     console.log(req.params.id);
