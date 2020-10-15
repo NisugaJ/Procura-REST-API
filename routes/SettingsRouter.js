@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
-var Supplier = require("../models/Settings");
 const dbCon = require("../utils/db_Connection");
+const Settings = require('../models/Settings')
 
 /* GET ALL Settings */
 router.get("/", function (req, res, next) {
@@ -22,5 +22,16 @@ router.get("/", function (req, res, next) {
       });
   });
 });
+
+/* POST all settings */
+router.post("/", async (req, res) => {
+  try {
+    const newSetting = new Settings(req.body)
+    const result = await newSetting.save()
+    res.status(201).send(result)
+  } catch (error) {
+    res.status(500).send("Internal server error", error)
+  }
+})
 
 module.exports = router;
