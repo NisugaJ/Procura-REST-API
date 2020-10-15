@@ -40,7 +40,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 
-/* POST - Register a Item */
+/* order received */
 router.post("/received", function (req, response, next) {
   
     console.log("666");
@@ -110,6 +110,37 @@ router.post("/received", function (req, response, next) {
         //full delivery end
     }else {
         //partial delivery start
+         //full delivery start
+         MongoClient.connect(url, function(err, db) {
+            if (err) throw err;
+            var dbo = db.db("ProcurementDB");
+            var myquery = { "_id": ObjectId(reqObj.reqId) };
+            var newvalues = { $set: {status: "PARTIALLY_DELIVERED" } };
+            dbo.collection("Requisitions").updateOne(myquery, newvalues, function(err, res) {
+              if (err) throw err;
+              console.log("1 requisition updated");     
+                             
+
+              var myquery1 = { "_id": ObjectId(reqObj.orderId) };
+              var newvalues1 = { $set: {
+                  status: "PARTIALLY_DELIVERED", 
+                  orderedCount:reqObj.quantity,
+                  receivedCount : reqObj.inputCount,
+                  signature : reqObj.proof,
+                  receivedDate: reqObj.date,
+                  totalPrice: reqObj.totalPrice
+                } };
+              dbo.collection("Orders").updateOne(myquery1, newvalues1, function(err, res) {
+                if (err) throw err;
+                console.log("1 order updated");     
+                               
+                response.send(true);
+                db.close();
+              });
+                    // #
+              db.close();
+            });
+          }); 
         //partial delivery end
     }
 

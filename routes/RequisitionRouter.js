@@ -654,7 +654,7 @@ router.get('/daily/:status',  function(req, res, next) {
 //Provide requisition id and get order object (if exists)
 
 /* GET SINGLE Requisition BY ID */
-router.get('/objByReqId/:id', function(req, res, next) {
+router.get('/orderobjByReqId/:id', function(req, res, next) {
    
     var stringArr = req.url.split('id=');
     var reqId  = stringArr[1]; 
