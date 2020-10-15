@@ -12,6 +12,7 @@ var SiteManagerRouter = require("./routes/SiteManagerRouter");
 var ItemRouter = require("./routes/ItemRouter");
 var SettingsRouter = require("./routes/SettingsRouter");
 var SupplierRouter = require("./routes/SupplierRouter");
+var LocationRouter = require("./routes/LocationRouter");
 
 var mongoose = require("mongoose");
 
@@ -40,6 +41,7 @@ app.use("/requisition", RequisitionRouter);
 app.use("/item", ItemRouter);
 app.use("/settings", SettingsRouter);
 app.use("/supplier", SupplierRouter);
+app.use("/location", LocationRouter);
 
 
 var cors = require("cors");
