@@ -3,9 +3,12 @@ var Schema = mongoose.Schema;
 var REQUISITION_STATUS = require("../params").REQUISITION_STATUS;
 
 var Requisition = new Schema({
-  userName: {
+  siteManagerUsername: {
     type: String,
     required: true,
+  },
+  totalPrice: {
+    type: Number,
   },
   itemId: {
     type: String,

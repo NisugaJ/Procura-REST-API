@@ -1,10 +1,10 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
-var Locations = new Schema({
+var Site = new Schema({
   location: {
     type: String,
   },
 });
 
-module.exports = mongoose.model("Location", Locations, "Locations");
+module.exports = mongoose.model("Site", Site, "Sites");
