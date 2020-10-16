@@ -1,10 +1,21 @@
 var express = require("express");
+var app = express();
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var cors = require("cors");
 
 const dbCon = require("./utils/db_Connection");
+var mongoose = require("mongoose");
+
+var url = dbCon.mongoURIConnString.toString();
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+
+var db = mongoose.connection;
+db.on("error", console.error.bind(console, "connection error:"));
+db.once("open", function () {
+  console.log("Connected to MongoDB!");
+});
 
 var indexRouter = require("./routes/index");
 var RequisitionRouter = require("./routes/RequisitionRouter");
@@ -15,19 +26,6 @@ var SupplierRouter = require("./routes/SupplierRouter");
 var LocationRouter = require("./routes/LocationRouter");
 var OrderRouter = require("./routes/OrderRouter");
 
-var mongoose = require("mongoose");
-
-var url = dbCon.mongoURIConnString.toString();
-// mongoose.connect('mongodb+srv://admin:Y7V13akH6fjMidc6@cluster-procuradb.pihut.mongodb.net/procura-db?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
-
-var db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", function () {
-  console.log("Connected to MongoDB!");
-});
-
-var app = express();
 
 app.use(cors());
 app.use(logger("dev"));
