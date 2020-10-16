@@ -2,19 +2,19 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const Supplier = new Schema({
-    name:{
+    name: {
         type: String,
         required: true
     },
-    location:{
+    location: {
         type: String,
     },
-    supplierLogoURL:{
+    supplierLogoURL: {
         type: String,
     },
-    supplierMail:{
+    supplierMail: {
         type: String,
     }
 })
 
-module.exports = mongoose.model("Supplier", Supplier,"Suppliers")
+module.exports = mongoose.model("Supplier", Supplier, "Supplier")
