@@ -7,4 +7,4 @@ var Locations = new Schema({
   },
 });
 
-module.exports = mongoose.model("Locations", Locations);
+module.exports = mongoose.model("Location", Locations, "Locations");

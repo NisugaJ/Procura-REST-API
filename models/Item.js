@@ -42,4 +42,4 @@ var Item = new Schema({
   },
 });
 
-module.exports = mongoose.model("Items", Item);
+module.exports = mongoose.model("Item", Item, "Items");

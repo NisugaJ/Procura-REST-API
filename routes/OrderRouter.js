@@ -1,16 +1,35 @@
 var express = require("express");
 var router = express.Router();
 var Order = require("../models/Order");
+var Requisition = require("../models/Requisition");
+var Supplier = require("../models/Supplier");
+var Item = require("../models/Item");
 const dbCon = require("../utils/db_Connection");
 var ObjectId = require('mongodb').ObjectID;
 
 
 /* GET ALL Orders */
-router.get('/all', function(req, res, next) {
-    Supplier.find(function (err, suppliers) {
-        if (err) return next(err);
-        res.json(suppliers);
-    });
+router.get('/all', async function(req, res, next) {
+  let orders = [];
+  try{
+     orders = await Order
+     .find()
+     .populate(
+       {
+         path:'requisitionId', model: Requisition,
+       })
+      .populate(
+      {
+        path:'itemId', model: Item,
+      })
+    }catch(e){
+      console.log("ERROR:",e);
+      res.status(200).json({'success':false, 'error': e.message })
+    }finally{
+      if(orders){
+        res.status(200).json({'success':true, orders:orders})
+      }
+    }
 });
   
 /* GET SINGLE Order BY ID */

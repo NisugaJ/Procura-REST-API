@@ -38,4 +38,4 @@ var Requisition = new Schema({
   },
 });
 
-module.exports = mongoose.model("Requisitions", Requisition);
+module.exports = mongoose.model("Requisition", Requisition, "Requisitions");

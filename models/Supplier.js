@@ -8,7 +8,13 @@ const Supplier = new Schema({
     },
     location:{
         type: String,
+    },
+    supplierLogoURL:{
+        type: String,
+    },
+    supplierMail:{
+        type: String,
     }
 })
 
-module.exports = mongoose.model("Suppliers", Supplier)
+module.exports = mongoose.model("Supplier", Supplier,"Suppliers")
