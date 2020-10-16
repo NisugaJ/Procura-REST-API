@@ -39,4 +39,4 @@ var SiteManagerSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("SiteManagers", SiteManagerSchema);
+module.exports = mongoose.model("SiteManager", SiteManagerSchema, "SiteManagers");

@@ -116,3 +116,5 @@ dist
 
 #lock files
 package-lock.json
+# Yarn
+yarn.lock
