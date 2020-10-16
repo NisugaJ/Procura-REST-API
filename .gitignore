@@ -113,5 +113,8 @@ dist
 
 # End of https://www.toptal.com/developers/gitignore/api/node
 
+
+#lock files
+package-lock.json
 # Yarn
 yarn.lock
