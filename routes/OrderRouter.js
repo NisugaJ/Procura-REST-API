@@ -3,6 +3,7 @@ var router = express.Router();
 var Order = require("../models/Order");
 var Requisition = require("../models/Requisition");
 var Supplier = require("../models/Supplier");
+var Site = require("../models/Location");
 var Item = require("../models/Item");
 const dbCon = require("../utils/db_Connection");
 var ObjectId = require('mongodb').ObjectID;
@@ -14,14 +15,41 @@ router.get('/all', async function(req, res, next) {
   try{
      orders = await Order
      .find()
-     .populate(
+     .populate([
        {
          path:'requisitionId', model: Requisition,
-       })
-      .populate(
-      {
-        path:'itemId', model: Item,
-      })
+         select:['itemId', 'comment'],
+         populate:[
+           {
+            path: "itemId", 
+            model: Item,
+            select:['itemName', 'photoURL11','photoURL21'],
+            populate:{
+              path: "supplierId", 
+              model: Supplier,
+              select:['name','location'],
+            }
+           }, 
+           {
+            path: "siteId", 
+            model: Site,
+            select:['location']
+           }
+         ], 
+       }, 
+      //  {
+      //   path:'requisitionId', model: Requisition,
+      //   populate:{
+      //     path: "supplierId", 
+      //     model: Supplier,
+      //   }, 
+      //  //  populate:{
+      //  //   path: "supplierId", 
+      //  //   model: Supplier,
+      //  // }
+      // }
+      ]
+      )
     }catch(e){
       console.log("ERROR:",e);
       res.status(200).json({'success':false, 'error': e.message })
