@@ -113,7 +113,8 @@ router.post("/received", function (req, response, next) {
                   receivedCount : reqObj.inputCount,
                   signature : reqObj.proof,
                   receivedDate: reqObj.date,
-                  totalPrice: reqObj.totalPrice
+                  totalPrice: reqObj.totalPrice,
+                  payStatus:false,
                 } };
               dbo.collection("Orders").updateOne(myquery1, newvalues1, function(err, res) {
                 if (err) throw err;
@@ -147,7 +148,8 @@ router.post("/received", function (req, response, next) {
                   receivedCount : reqObj.inputCount,
                   signature : reqObj.proof,
                   receivedDate: reqObj.date,
-                  totalPrice: reqObj.totalPrice
+                  totalPrice: reqObj.totalPrice,
+                  payStatus:false,
                 } };
               dbo.collection("Orders").updateOne(myquery1, newvalues1, function(err, res) {
                 if (err) throw err;
@@ -218,5 +220,80 @@ router.get('/req/:id', function(req, res, next) {
 //       });
 //   });
 // });
+
+
+/*  get all orders obj which are DELIVERED  {status:DELIVERED} and not paid
+  in Orders collection 
+*/
+router.get('/pay/getUnpaidDelivered', function(req, res, next) {
+
+  var MongoClient = require("mongodb").MongoClient;
+  var url = dbCon.mongoURIConnString;
+  var respCount = 0;
+  var result = [];
+
+  MongoClient.connect(url, function (err, db) {
+   if (err) throw err;
+   var dbo = db.db("ProcurementDB");
+   dbo.collection("Orders").find({status: "DELIVERED", payStatus:false }).toArray(function (err, resultOrd) {
+       if (err) throw err;
+console.log("orders loaded")
+
+      if(resultOrd.length == 0){
+        res.send(true);
+        db.close();
+      }
+      
+      for(let i = 0;i < resultOrd.length;i++){
+            //order loop start
+            
+            var resObj = {
+              orderId : resultOrd[i]._id,
+              reqId:resultOrd[i].requisitionId,
+              payStatus : false,
+              receivedDate: resultOrd[i].receivedDate
+            };
+            result.push(resObj);
+
+            dbo.collection("Requisitions").find(ObjectId(result[i].reqId)).toArray(function (err, resultReq) {
+              //req query start
+              if (err) throw err;
+              result[i].orderedDate = resultReq[0].requisitionDate
+              result[i].price = resultReq[0].totalPrice,
+console.log("req loaded for:"+result[i].reqId);
+console.log("sending item query for:"+resultReq[0].itemId);
+   
+              dbo.collection("Items").find(ObjectId(resultReq[0].itemId)).toArray(function (err, resultItem) {
+                      if (err){
+                        console.log("error loading item for id:"+resultReq[0].itemId,err)
+                        throw err;
+                      } 
+                      
+console.log("respCount:"+respCount);
+console.log("item loaded for:"+resultReq[0].itemId);
+
+                        var item = resultItem[0];
+                        result[i].id= respCount+1;
+console.log("resObj.id:"+result[i].id+"::"+result[i].itemName);                
+                        result[i].itemName = item.itemName
+                        result[i].itemPhoto = item.photoURL11
+                        
+                        if(respCount++ == resultOrd.length-1){
+                          console.log("########");
+                          console.log(result);
+                          db.close();
+                          res.send(result);
+                        }
+
+                    }); //item query end
+            });//req query end
+      }//order loop end
+     });
+ });
+
+
+
+});
+
 
 module.exports = router;
