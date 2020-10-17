@@ -14,6 +14,7 @@ var SettingsRouter = require("./routes/SettingsRouter");
 var SupplierRouter = require("./routes/SupplierRouter");
 var LocationRouter = require("./routes/LocationRouter");
 var OrderRouter = require("./routes/OrderRouter");
+var PaymentsRouter = require("./routes/PaymentsRouter");
 
 var mongoose = require("mongoose");
 
@@ -44,6 +45,8 @@ app.use("/settings", SettingsRouter);
 app.use("/supplier", SupplierRouter);
 app.use("/location", LocationRouter);
 app.use("/order", OrderRouter);
+app.use("/payment", PaymentsRouter);
+
 
 
 
