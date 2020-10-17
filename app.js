@@ -27,9 +27,6 @@ var LocationRouter = require("./routes/LocationRouter");
 var OrderRouter = require("./routes/OrderRouter");
 var PaymentsRouter = require("./routes/PaymentsRouter");
 
-var PaymentsRouter = require("./routes/PaymentsRouter");
-
-
 app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
