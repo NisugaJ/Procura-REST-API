@@ -7,11 +7,18 @@ var Site = require("../models/Location");
 var Item = require("../models/Item");
 const dbCon = require("../utils/db_Connection");
 var ObjectId = require('mongodb').ObjectID;
-
+var REQUISITION_STATUS = require("../params").REQUISITION_STATUS;
+var PAY_STATUS = require("../params").PAY_STATUS;
 
 /* GET ALL Orders */
 router.get('/all', async function(req, res, next) {
   let orders = [];
+  let counts = {
+    ORDER_PLACED :0,
+    PARTIALLY_DELIVERED:0,
+    DELIVERED:0,
+    PAID:0
+  }
   try{
      orders = await Order
      .find()
@@ -33,29 +40,38 @@ router.get('/all', async function(req, res, next) {
            {
             path: "siteId", 
             model: Site,
-            select:['location']
+            select:'location'
            }
          ], 
        }, 
-      //  {
-      //   path:'requisitionId', model: Requisition,
-      //   populate:{
-      //     path: "supplierId", 
-      //     model: Supplier,
-      //   }, 
-      //  //  populate:{
-      //  //   path: "supplierId", 
-      //  //   model: Supplier,
-      //  // }
-      // }
       ]
       )
+
+      orders.forEach((val,i)=>{
+        console.log(val.status);
+        switch(val.status){
+          case REQUISITION_STATUS.ORDER_PLACED :
+            counts.ORDER_PLACED ++
+            break
+          case REQUISITION_STATUS.PARTIALLY_DELIVERED :
+            counts.PARTIALLY_DELIVERED ++
+            break
+          case REQUISITION_STATUS.DELIVERED :
+            counts.DELIVERED ++
+            break
+          case PAY_STATUS.PAID :
+            counts.PAID ++
+            break
+          default :
+        }
+      })
+      console.log(counts);
     }catch(e){
       console.log("ERROR:",e);
       res.status(200).json({'success':false, 'error': e.message })
     }finally{
       if(orders){
-        res.status(200).json({'success':true, orders:orders})
+        res.status(200).json({'success':true, orders:orders, counts :counts})
       }
     }
 });
@@ -247,4 +263,28 @@ router.get('/req/:id', function(req, res, next) {
 //   });
 // });
 
+
+
+  /* Add DELIVERED Order to the payment queue  */
+  router.post('/pay', async function(req, res, next) {
+
+    try{    
+      const orderId = req.body.orderId
+
+      const order = await Order.findById(orderId)
+
+      order.payStatus = true
+      order.status = "PAID"
+      const saved = await order.save()
+
+      if(saved.payStatus)
+        res.status(200).json({success:true, order:saved})
+      else
+        res.status(200).json({success:false, message:"Failed"})
+
+    }catch(e){
+      res.status(200).json({success:false, error:e.message})
+    }
+
+  });
 module.exports = router;
