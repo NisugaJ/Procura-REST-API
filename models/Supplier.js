@@ -17,4 +17,4 @@ const Supplier = new Schema({
     }
 })
 
-module.exports = mongoose.model("Supplier", Supplier, "Supplier")
+module.exports = mongoose.model("Supplier", Supplier,"Supplier")
