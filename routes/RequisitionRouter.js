@@ -69,6 +69,41 @@ router.get('/adminAll', async function (req, res, next) {
   }
 });
 
+
+router.get('/reqisitionDeatils', async function (req, res, next) {
+  let requisitionPaid;
+  let requisitionPending;
+  let requisitionApproved;
+  let requisitionRejected;
+  let requisitionDetails = [];
+  try {
+    requisitionPaid = await Requisition
+      .find({ status: "PAID" }).count()
+
+    requisitionPending = await Requisition
+      .find({ status: "APPROVAL_PENDING" }).count()
+
+    requisitionApproved = await Requisition
+      .find({ status: "APPROVED" }).count()
+
+    requisitionRejected = await Requisition
+      .find({ status: "REJECTED" }).count()
+
+    requisitionDetails = {
+      requisitionPaid: requisitionPaid, requisitionPending: requisitionPending, requisitionApproved: requisitionApproved,
+      requisitionRejected: requisitionRejected
+    }
+
+  } catch (e) {
+    console.log("ERROR:", e);
+    res.status(200).json({ 'success': false, 'error': e.message })
+  } finally {
+    if (requisition) {
+      res.status(200).json({ 'success': true, requisitionDetails: requisitionDetails })
+    }
+  }
+});
+
 /* GET Requisitions BY Type */
 router.get('/:type', function (req, res, next) {
   console.log("----");
@@ -466,7 +501,26 @@ router.post('/placeApprovedOrder', function (req, res, next) {
 });
 
 
+router.post('/placeRejectOrder', function (req, res, next) {
 
+  console.log(req.body);
+
+  // req.body.reqId
+
+  var MongoClient = require("mongodb").MongoClient;
+  var url = dbCon.mongoURIConnString;
+
+  MongoClient.connect(url, function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("ProcurementDB");
+    var myquery = { "_id": ObjectId(req.body.reqId) };
+    var newvalues = { $set: { status: "REJECTED" } };
+    dbo.collection("Requisitions").updateOne(myquery, newvalues)
+
+
+  });
+
+});
 
 
 
