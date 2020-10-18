@@ -59,7 +59,7 @@ router.post('/login', async function(req, res, next) {
     }
 });
     
-
+// Sends a response wrapping the JWT Sign
 function sendJWT_SignedResponse(loggedInUser, res, userType) {
     
     if (loggedInUser !== null) {
