@@ -6,9 +6,8 @@ let StaffMember = require("../models/StaffMember")
 let clientTypes = require("../params").clientTypes
 
 const jwt = require("jsonwebtoken")
-let loggedInUser = {};
 
-/* login*/
+// login
 router.post('/login', async function(req, res, next) {
 
     try{
@@ -28,6 +27,7 @@ router.post('/login', async function(req, res, next) {
             const reqData = req.body
             
             let user = null
+            console.log(reqData.type)
             
             //Is a manager ?
             if(reqData.type === clientTypes.MANAGER){
@@ -39,10 +39,9 @@ router.post('/login', async function(req, res, next) {
                     res.status(401).json({ success: false, message: "No User found" })
                 }
             }
-            
             //Is a staff member ?
-            else if(reqData.type === clientTypes.STAFF_MANAGER){
-                user = StaffMember.findOne({ username: reqData.username, password: reqData.password })
+            else if(reqData.type === clientTypes.STAFF_MEMBER){
+                user = await StaffMember.findOne({ username: reqData.username, password: reqData.password })
                 console.log(user.id);
                 if(user.id){
                     sendJWT_SignedResponse(user, res, clientTypes.STAFF_MEMBER)
