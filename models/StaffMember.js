@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
-var SiteManagerSchema = new Schema({
+var StaffMember = new Schema({
   username: {
     type: String,
     required: true,
@@ -10,20 +10,16 @@ var SiteManagerSchema = new Schema({
     type: String,
     required: true,
   },
+  email:{
+    type:String,
+    required: true,
+  },
+  password:{
+    type:String,
+    required: true,
+  },
   gender: {
     type: String,
-    required: true,
-  },
-  siteId: {
-    type: Number,
-    required: true,
-  },
-  workingHours: {
-    type: String,
-    required: true,
-  },
-  nightShift: {
-    type: Boolean,
     required: true,
   },
   rank: {
@@ -34,9 +30,6 @@ var SiteManagerSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  password: {
-    password: String,
-  },
 });
 
-module.exports = mongoose.model("SiteManager", SiteManagerSchema, "SiteManagers");
+module.exports = mongoose.model("StaffMember", StaffMember, "StaffMembers");

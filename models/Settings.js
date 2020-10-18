@@ -12,4 +12,4 @@ var Settings = new Schema({
   },
 });
 
-module.exports = mongoose.model("Settings", Settings);
+module.exports = mongoose.model("Setting", Settings,"settings");
