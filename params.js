@@ -23,4 +23,9 @@ module.exports = {
     MEDIUM: "MEDIUM",
     HIGH: "HIGH",
   },
+  clientTypes: {
+    MANAGER: 'MANAGER',
+    STAFF_MEMBER: 'STAFF_MEMBER',
+    SITE_MANAGER: 'SITE_MANAGER',
+  }
 };

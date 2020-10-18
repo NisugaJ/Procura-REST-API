@@ -9,7 +9,7 @@ const dbCon = require("./utils/db_Connection");
 var mongoose = require("mongoose");
 
 var url = dbCon.mongoURIConnString.toString();
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, poolSize:1 });
 
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
@@ -18,6 +18,7 @@ db.once("open", function () {
 });
 
 var indexRouter = require("./routes/index");
+var authRouter = require("./routes/authRouter");
 var RequisitionRouter = require("./routes/RequisitionRouter");
 var SiteManagerRouter = require("./routes/SiteManagerRouter");
 var ItemRouter = require("./routes/ItemRouter");
@@ -35,6 +36,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
+app.use("/auth", authRouter);
 app.use("/siteManager", SiteManagerRouter);
 app.use("/requisition", RequisitionRouter);
 app.use("/item", ItemRouter);
